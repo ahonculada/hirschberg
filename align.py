@@ -13,10 +13,11 @@ class Align:
         self.path = []
         self.alignment_1 = ''
         self.alignment_2 = ''
-        self.foward = [[0 for _ in range(len(B)+1)] for _ in range(2)]
+        self.forward = [[0 for _ in range(len(B)+1)] for _ in range(2)]
         self.reverse = [[0 for _ in range(len(B)+1)] for _ in range(2)]
-        self.min_alignment_score = self.naive_align(A, B)
-        self.reconstruct_path(len(A), len(B))
+        self.min_alignment_score = -1
+        self.naive_align(A, B)
+        #self.hirsch_align(A, B)
 
     def reconstruct_path(self, row: int, col: int):
         if not row and not col:
@@ -36,7 +37,7 @@ class Align:
             self.alignment_1 += A[row-1]
             self.alignment_2 += '-'
 
-    def naive_align(self, A: str, B: str) -> int:
+    def naive_align(self, A: str, B: str):
         rows, cols = len(A), len(B)
         DP = [[Cell(0) for _ in range(cols+1)] for _ in range(rows+1)]
         for i in range(1, rows+1):
@@ -60,9 +61,13 @@ class Align:
                     DP[row][col].prev = 'u'
                 DP[row][col].val = small
         self.DP = DP
-        return DP[-1][-1].val
+        self.min_alignment_score = DP[-1][-1].val
 
-    def hirsch_align(self, A1: int, A2: int, B1: int, B2: int):
+    def hirsch_align(self, A: str, B: str):
+        A1, A2, B1, B2 = 0, len(A), 0, len(B)
+        self._hirsch_align(A1, A2, B1, B2)
+
+    def _hirsch_align(self, A1: int, A2: int, B1: int, B2: int):
         # no more characters in A
         if A2 <= A1:
             for i in range(B1, B2):
@@ -94,16 +99,18 @@ class Align:
         mid = (A1 + A2) // 2
         self.set_forward(A1, mid, B1, B2)
         self.set_reverse(mid, A2, B1, B2)
-        B_mid = B1
+        k_star = B1
         best = float('inf')
         # find cheapest split
         for i in range(B1, B2):
-            S = self.foward[mid%2][i] + self.reverse[mid%2][i]
+            S = self.forward[mid%2][i] + self.reverse[mid%2][i]
             if S < best:
-                best, B_mid = S, i
+                best, k_star = S, i
+        if self.min_alignment_score == -1:
+            self.min_alignment_score = best
 
-        self.hirsch_align(A1, mid, B1, B_mid)
-        self.hirsch_align(mid, A2, B_mid, B2)
+        self._hirsch_align(A1, mid, B1, k_star)
+        self._hirsch_align(mid, A2, k_star, B2)
 
     def set_forward(self, A1: int, A2: int, B1: int, B2: int):
         self.forward[A1%2][B1] = 0
@@ -130,7 +137,7 @@ class Align:
                 self.reverse[i%2][j] = min(
                     self.reverse[(i+1)%2][j] + 1,
                     self.reverse[i%2][j+1] + 1,
-                    self.reverse[(i+1)%2][j+1] + 1 * (self.A1[i-1] == self.B[j-1])
+                    self.reverse[(i+1)%2][j+1] + 1 * (self.A[i-1] == self.B[j-1])
                 )
 
     def print_DP(self):
@@ -144,7 +151,9 @@ class Align:
         print("Second String: {}".format(self.B))
         #self.print_DP()
         print("Minimum Alignment Score: {}".format(self.min_alignment_score))
-        print("Alignment")
+        print()
+        self.reconstruct_path(len(self.A), len(self.B))
+        print("Alignment:")
         print(self.alignment_1)
         print(self.alignment_2)
 
@@ -157,6 +166,8 @@ def read_in() -> (str, str):
 
 if __name__ == '__main__':
     A, B = read_in()
+    A = 'GATCGTA'
+    B = 'GACGGGA'
     solution = Align(A, B)
     solution.print_report()
 
