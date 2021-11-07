@@ -13,6 +13,8 @@ class Align:
         self.path = []
         self.alignment_1 = ''
         self.alignment_2 = ''
+        self.min_alignment_score = self.align(A, B)
+        self.reconstruct_path(len(A), len(B))
 
     def reconstruct_path(self, row: int, col: int):
         if not row and not col:
@@ -64,6 +66,16 @@ class Align:
                 print(C.val, end=" ")
             print()
 
+    def print_report(self):
+        print("First String:  {}".format(self.A))
+        print("Second String: {}".format(self.B))
+        #self.print_DP()
+        print("Minimum Alignment Score: {}".format(self.min_alignment_score))
+        print("Alignment")
+        print(self.alignment_1)
+        print(self.alignment_2)
+
+
 def read_in() -> (str, str):
     with open('data.txt', 'r') as data:
         A = data.readline().split()[0]
@@ -72,15 +84,6 @@ def read_in() -> (str, str):
 
 if __name__ == '__main__':
     A, B = read_in()
-    #A = 'ACTGCA'
-    #B = 'ACGTA'
     solution = Align(A, B)
-    print(A)
-    print(B)
-    ans = solution.align(A, B)
-    solution.print_DP()
-    print(ans)
-    solution.reconstruct_path(len(A), len(B))
-    print(solution.alignment_1)
-    print(solution.alignment_2)
+    solution.print_report()
 
