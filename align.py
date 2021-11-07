@@ -13,7 +13,7 @@ class Align:
         self.path = []
         self.alignment_1 = ''
         self.alignment_2 = ''
-        self.min_alignment_score = self.align(A, B)
+        self.min_alignment_score = self.naive_align(A, B)
         self.reconstruct_path(len(A), len(B))
 
     def reconstruct_path(self, row: int, col: int):
@@ -34,7 +34,7 @@ class Align:
             self.alignment_1 += A[row-1]
             self.alignment_2 += '-'
 
-    def align(self, A: str, B: str) -> int:
+    def naive_align(self, A: str, B: str) -> int:
         rows, cols = len(A), len(B)
         DP = [[Cell(0) for _ in range(cols+1)] for _ in range(rows+1)]
         for i in range(1, rows+1):
