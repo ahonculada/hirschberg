@@ -112,6 +112,7 @@ class Align:
         self._hirsch_align(A1, mid, B1, k_star)
         self._hirsch_align(mid, A2, k_star, B2)
 
+    @profile
     def set_forward(self, A1: int, A2: int, B1: int, B2: int):
         self.forward[A1%2][B1] = 0
         # set first row
@@ -130,6 +131,7 @@ class Align:
                 )
             #print(self.forward[i%2][B1:B2+1].val)
 
+    @profile
     def set_reverse(self, A1: int, A2: int, B1: int, B2: int):
         self.reverse[A2%2][B2] = 0
         # set first row
