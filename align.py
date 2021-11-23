@@ -1,3 +1,4 @@
+import tracemalloc
 class Cell:
     def __init__(self, val: int):
         self.val = val
@@ -112,7 +113,6 @@ class Align:
         self._hirsch_align(A1, mid, B1, k_star)
         self._hirsch_align(mid, A2, k_star, B2)
 
-    @profile
     def set_forward(self, A1: int, A2: int, B1: int, B2: int):
         self.forward[A1%2][B1] = 0
         # set first row
@@ -131,7 +131,6 @@ class Align:
                 )
             #print(self.forward[i%2][B1:B2+1].val)
 
-    @profile
     def set_reverse(self, A1: int, A2: int, B1: int, B2: int):
         self.reverse[A2%2][B2] = 0
         # set first row
@@ -178,6 +177,11 @@ if __name__ == '__main__':
     A, B = read_in()
     #A = 'GATCGTA'
     #B = 'GACGGGA'
+    tracemalloc.start()
     solution = Align(A, B)
-    solution.print_report()
+    #solution.print_report()
+    x = tracemalloc.get_traced_memory()
+    #print(x)
+    print(len(A), '\t', x[1])
+    tracemalloc.stop()
 
