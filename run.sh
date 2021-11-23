@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for i in {100..2000..100}
+for i in {100..6000..500}
 do
 	python3 average.py $i
 done
